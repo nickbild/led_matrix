@@ -1,3 +1,28 @@
+typedef uint32_t PortType;
+
+// Pointers to register addresses.
+volatile PortType *addrPortA;
+volatile PortType *addrPortB;
+
+// Bit masks for pins.
+PortType maskR1;
+PortType maskG1;
+PortType maskB1;
+
+PortType maskR2;
+PortType maskG2;
+PortType maskB2;
+
+PortType maskSelectA;
+PortType maskSelectB;
+PortType maskSelectC;
+PortType maskSelectD;
+
+PortType maskOE;
+PortType maskLatch;
+PortType maskClk;
+
+// Pin numbers.
 int pinR1 = 2;
 int pinG1 = 3;
 int pinB1 = 4;
@@ -15,10 +40,12 @@ int selectB = A1;
 int selectC = A2;
 int selectD = A3;
 
+// Current state of matrix.
 int currentRow = 0;
 int frame = 1;
 int totalFrames = 10;
 
+// Data to display.
 int brightnessR[32][32] = { 
                               {0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                               {0,1,0,0,0,1,0,0,1,0,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -125,6 +152,26 @@ int brightnessB[32][32] = {
                            };
 
 void setup() {
+  addrPortA = portOutputRegister(digitalPinToPort(selectA));
+  addrPortB = portOutputRegister(digitalPinToPort(pinR1));
+  
+  maskR1 = digitalPinToBitMask(pinR1);
+  maskG1 = digitalPinToBitMask(pinG1);
+  maskB1 = digitalPinToBitMask(pinB1);
+
+  maskR2 = digitalPinToBitMask(pinR2);
+  maskG2 = digitalPinToBitMask(pinG2);
+  maskB2 = digitalPinToBitMask(pinB2);
+
+  maskSelectA = digitalPinToBitMask(selectA);
+  maskSelectB = digitalPinToBitMask(selectB);
+  maskSelectC = digitalPinToBitMask(selectC);
+  maskSelectD = digitalPinToBitMask(selectD);
+
+  maskOE = digitalPinToBitMask(pinOE);
+  maskLatch = digitalPinToBitMask(latch);
+  maskClk = digitalPinToBitMask(pinClk);
+
   pinMode(pinR1, OUTPUT);
   pinMode(pinG1, OUTPUT);
   pinMode(pinB1, OUTPUT);
@@ -148,20 +195,21 @@ void loop() {
   for (int i=0; i<32; i++){
     plotPixelUpper(brightnessR[currentRow][i], brightnessG[currentRow][i], brightnessB[currentRow][i], frame);
     plotPixelLower(brightnessR[currentRow+16][i], brightnessG[currentRow+16][i], brightnessB[currentRow+16][i], frame);
-    
-    digitalWrite(pinClk, HIGH);
-    digitalWrite(pinClk, LOW);
+
+    // Hit clock to indicate pixel values are set.
+    *addrPortB |= maskClk;
+    *addrPortB &= ~maskClk;
   }
 
   // Turn off LEDs before turning on current row.
-  digitalWrite(pinOE, HIGH);
-  digitalWrite(pinOE, LOW);
+  *addrPortA |= maskOE;
+  *addrPortA &= ~maskOE;
 
   setCurrentRow(currentRow);
 
   // All data is in.  Latch current row.
-  digitalWrite(latch, HIGH);
-  digitalWrite(latch, LOW);
+  *addrPortA |= maskLatch;
+  *addrPortA &= ~maskLatch;
 
   // Move to next row.
   currentRow++;
@@ -177,50 +225,68 @@ void loop() {
 
 // Choose rows to display by setting "select" pins.
 void setCurrentRow(int currentRow) {
-  digitalWrite(selectA, bitRead(currentRow, 0));
-  digitalWrite(selectB, bitRead(currentRow, 1));
-  digitalWrite(selectC, bitRead(currentRow, 2));
-  digitalWrite(selectD, bitRead(currentRow, 3));
+  if (bitRead(currentRow, 0) == 1) {
+    *addrPortA |= maskSelectA;
+  } else {
+    *addrPortA &= ~maskSelectA;
+  }
+
+  if (bitRead(currentRow, 1) == 1) {
+    *addrPortA |= maskSelectB;
+  } else {
+    *addrPortA &= ~maskSelectB;
+  }
+
+  if (bitRead(currentRow, 2) == 1) {
+    *addrPortA |= maskSelectC;
+  } else {
+    *addrPortA &= ~maskSelectC;
+  }
+
+  if (bitRead(currentRow, 3) == 1) {
+    *addrPortA |= maskSelectD;
+  } else {
+    *addrPortA &= ~maskSelectD;
+  }
 }
 
-//Port B: 17, 16, 13
 void plotPixelUpper(int redBrightness, int greenBrightness, int blueBrightness, int frame) {
     if (frame <= redBrightness) {
-      digitalWrite(pinR1, HIGH);
+      *addrPortB |= maskR1;
     } else {
-      digitalWrite(pinR1, LOW);
+      *addrPortB &= ~maskR1;
     }
     
     if (frame <= greenBrightness) {
-      digitalWrite(pinG1, HIGH);
+      *addrPortB |= maskG1;
     } else {
-      digitalWrite(pinG1, LOW);
+      *addrPortB &= ~maskG1;
     }
     
     if (frame <= blueBrightness) {
-      digitalWrite(pinB1, HIGH);
+      *addrPortB |= maskB1;
     } else {
-      digitalWrite(pinB1, LOW);
+      *addrPortB &= ~maskB1;
     }
 }
 
 void plotPixelLower(int redBrightness, int greenBrightness, int blueBrightness, int frame) {
     if (frame <= redBrightness) {
-      digitalWrite(pinR2, HIGH);
+      *addrPortB |= maskR2;
     } else {
-      digitalWrite(pinR2, LOW);
+      *addrPortB &= ~maskR2;
     }
     
     if (frame <= greenBrightness) {
-      digitalWrite(pinG2, HIGH);
+      *addrPortB |= maskG2;
     } else {
-      digitalWrite(pinG2, LOW);
+      *addrPortB &= ~maskG2;
     }
     
     if (frame <= blueBrightness) {
-      digitalWrite(pinB2, HIGH);
+      *addrPortB |= maskB2;
     } else {
-      digitalWrite(pinB2, LOW);
+      *addrPortB &= ~maskB2;
     }
 }
 
