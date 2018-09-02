@@ -18,5 +18,11 @@ Where `filename.txt` is output from "export as C file" of a sprite generated at 
 
 ## Examples
 
+![flag](https://raw.githubusercontent.com/nickbild/led_matrix/master/README/flag.jpg)
 
+![snowman](https://raw.githubusercontent.com/nickbild/led_matrix/master/README/snowman.jpg)
+
+## About the Author
+
+https://nickbild79.firebaseapp.com/
 
