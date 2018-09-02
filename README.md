@@ -2,7 +2,7 @@
 
 This project was designed with an Atmel ATSAMD51J19 microcontroller and a Lucky Light Electronics Co. 32x32 LED matrix in mind.  If you're using a different microcontroller, you probably need to change port/pin mappings.  If you're using a different LED matrix, make sure it uses the same control lines.
 
-## Usage.
+## Usage
 
 Compile `led_matrix.ino` in Arduino IDE and upload to your microcontroller.  Wire your LED matrix appropriately for the model you've chosen.
 
