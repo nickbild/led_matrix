@@ -1,3 +1,4 @@
+import re
 import sys
 
 red = ""
@@ -5,6 +6,9 @@ green = ""
 blue = ""
 
 for line in open(sys.argv[1]):
+	if not re.match("^0x", line):
+		continue
+
 	line = line.strip()
 	line = line.replace(" ", "")
 	lineAry = line.split(",")
