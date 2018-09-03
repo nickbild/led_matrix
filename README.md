@@ -16,6 +16,8 @@ create_led_pixel_array.py filename.txt
 
 Where `filename.txt` is output from "export as C file" of a sprite generated at www.piskelapp.com.
 
+For animation, create a series of images, then create the data structures following examples in the `data` directory.
+
 ## Examples
 
 ![flag](https://raw.githubusercontent.com/nickbild/led_matrix/master/README/flag.jpg)
