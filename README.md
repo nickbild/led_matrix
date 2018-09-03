@@ -22,6 +22,10 @@ Where `filename.txt` is output from "export as C file" of a sprite generated at 
 
 ![snowman](https://raw.githubusercontent.com/nickbild/led_matrix/master/README/snowman.jpg)
 
+## Note
+
+This code is highly optimized for processing speed at the expense of readability.  Microcontroller resources are limited, and manual pulse width modulation of a 32x32 LED matrix requires lots of cycles if flicker is to be avoided.
+
 ## About the Author
 
 https://nickbild79.firebaseapp.com/

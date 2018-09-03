@@ -5,6 +5,8 @@ red = ""
 green = ""
 blue = ""
 
+denominator = 256 / 35	# 256 / totalFrames -- scale colors to fit in PWM space.
+
 for line in open(sys.argv[1]):
 	if not re.match("^0x", line):
 		continue
@@ -22,9 +24,9 @@ for line in open(sys.argv[1]):
 		if pixel == "":
 			continue
 
-		b = str(int(int(pixel[4:6], 16) / 10.2))
-		g = str(int(int(pixel[6:8], 16) / 10.2))
-		r = str(int(int(pixel[8:10], 16) / 10.2))
+		b = str(int(int(pixel[4:6], 16) / denominator))
+		g = str(int(int(pixel[6:8], 16) / denominator))
+		r = str(int(int(pixel[8:10], 16) / denominator))
 
 		red += r
 		green += g
