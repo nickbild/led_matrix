@@ -28,11 +28,11 @@ int pinG1 = 3;
 int pinB1 = 4;
 
 int pinR2 = 5;
-int pinG2 = 7; //6
-int pinB2 = 9; //7
+int pinG2 = 7;
+int pinB2 = 9;
 
-int pinOE = 10; //9
-int latch = 11; //10
+int pinOE = 10;
+int latch = 11;
 int pinClk = A4;
 
 int selectA = A0;
@@ -470,6 +470,7 @@ int brightnessB[numImages][32][32] = {
                            };
 
 void setup() {
+  // Choose random pins known to correspond to each port register in use to get addresses.
   addrPortA = portOutputRegister(digitalPinToPort(pinR1));
   addrPortB = portOutputRegister(digitalPinToPort(pinG1));
   
