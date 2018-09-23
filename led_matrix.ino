@@ -28,11 +28,11 @@ int pinG1 = 3;
 int pinB1 = 4;
 
 int pinR2 = 5;
-int pinG2 = 6;
-int pinB2 = 7;
+int pinG2 = 7; //6
+int pinB2 = 9; //7
 
-int pinOE = 9;
-int latch = 10;
+int pinOE = 10; //9
+int latch = 11; //10
 int pinClk = A4;
 
 int selectA = A0;
@@ -470,8 +470,8 @@ int brightnessB[numImages][32][32] = {
                            };
 
 void setup() {
-  addrPortA = portOutputRegister(digitalPinToPort(selectA));
-  addrPortB = portOutputRegister(digitalPinToPort(pinR1));
+  addrPortA = portOutputRegister(digitalPinToPort(pinR1));
+  addrPortB = portOutputRegister(digitalPinToPort(pinG1));
   
   maskR1 = digitalPinToBitMask(pinR1);
   maskG1 = digitalPinToBitMask(pinG1);
@@ -513,9 +513,9 @@ void loop() {
   for (int i=0; i<32; i++){
     // Upper rows.
     if (frame <= brightnessR[imgNum][currentRow][i]) {
-      *addrPortB |= maskR1;
+      *addrPortA |= maskR1;
     } else {
-      *addrPortB &= ~maskR1;
+      *addrPortA &= ~maskR1;
     }
     
     if (frame <= brightnessG[imgNum][currentRow][i]) {
@@ -525,33 +525,33 @@ void loop() {
     }
     
     if (frame <= brightnessB[imgNum][currentRow][i]) {
-      *addrPortB |= maskB1;
+      *addrPortA |= maskB1;
     } else {
-      *addrPortB &= ~maskB1;
+      *addrPortA &= ~maskB1;
     }
 
     // Lower rows.
     if (frame <= brightnessR[imgNum][currentRow+16][i]) {
-      *addrPortB |= maskR2;
+      *addrPortA |= maskR2;
     } else {
-      *addrPortB &= ~maskR2;
+      *addrPortA &= ~maskR2;
     }
     
     if (frame <= brightnessG[imgNum][currentRow+16][i]) {
-      *addrPortB |= maskG2;
+      *addrPortA |= maskG2;
     } else {
-      *addrPortB &= ~maskG2;
+      *addrPortA &= ~maskG2;
     }
     
     if (frame <= brightnessB[imgNum][currentRow+16][i]) {
-      *addrPortB |= maskB2;
+      *addrPortA |= maskB2;
     } else {
-      *addrPortB &= ~maskB2;
+      *addrPortA &= ~maskB2;
     }
 
     // Hit clock to indicate pixel values are set.
-    *addrPortB |= maskClk;
-    *addrPortB &= ~maskClk;
+    *addrPortA |= maskClk;
+    *addrPortA &= ~maskClk;
   }
 
   // Turn off LEDs before turning on current row.
@@ -572,15 +572,15 @@ void loop() {
   }
 
   if (bitRead(currentRow, 2) == 1) {
-    *addrPortA |= maskSelectC;
+    *addrPortB |= maskSelectC;
   } else {
-    *addrPortA &= ~maskSelectC;
+    *addrPortB &= ~maskSelectC;
   }
 
   if (bitRead(currentRow, 3) == 1) {
-    *addrPortA |= maskSelectD;
+    *addrPortB |= maskSelectD;
   } else {
-    *addrPortA &= ~maskSelectD;
+    *addrPortB &= ~maskSelectD;
   }
 
   // All data is in.  Latch current row.
